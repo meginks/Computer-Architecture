@@ -87,6 +87,8 @@ class CPU:
         MUL = 0b10100010
         PUSH = 0b01000101 
         POP = 0b01000110
+        RET = 0b00010001
+        CALL = 0b01010000
         running = True
         while running:
             IR = self.ram[self.pc]
@@ -107,6 +109,19 @@ class CPU:
                 self.SP -= 1 
                 self.ram[self.SP] = self.reg[operand_a]
                 self.pc += 2 
+
+            elif IR == CALL: 
+                # self.reg[self.SP] -= 1 
+                # self.ram[self.reg[self.SP]] = self.pc + 2 
+                # new_address = self.ram[self.pc + 1]
+                # self.pc = self.reg[new_address]
+                self.SP -= 1 
+                self.ram[self.SP] = self.pc + 2 
+                self.pc = self.reg[operand_a] 
+                
+            elif IR == RET: 
+                self.pc = self.ram[self.reg[self.SP]]
+                self.reg[self.SP] += 1 
 
             elif IR == POP: 
                 self.reg[operand_a] = self.ram[self.SP]

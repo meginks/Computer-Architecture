@@ -14,6 +14,7 @@ class CPU:
         self.MAR = 0 
         self.MDR = 0 
         self.FL = 0 
+        self.SP = 0x07 
 
 
     def ram_read(self, MAR):
@@ -53,7 +54,7 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "MUL": 
-            self.reg[reg_a] *= self.reg[reg_b]
+            self.reg[reg_a] *= self.reg[reg_b] 
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -83,7 +84,9 @@ class CPU:
         HLT = 0b00000001 
         LDI = 0b10000010
         PRN  = 0b01000111 
-        MUL = 0b10100010 
+        MUL = 0b10100010
+        PUSH = 0b01000101 
+        POP = 0b01000110
         running = True
         while running:
             IR = self.ram[self.pc]
@@ -99,7 +102,17 @@ class CPU:
                 self.pc += 2
             elif IR == MUL: 
                 self.alu("MUL", operand_a, operand_b)
-                self.pc += 3
+                self.pc += 3 
+            elif IR == PUSH: 
+                self.SP -= 1 
+                self.ram[self.SP] = self.reg[operand_a]
+                self.pc += 2 
+
+            elif IR == POP: 
+                self.reg[operand_a] = self.ram[self.SP]
+                self.SP += 1 
+                self.pc += 2 
+                
             else:
                 print("Halt program")
                 running = False

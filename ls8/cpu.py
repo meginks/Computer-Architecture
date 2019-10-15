@@ -74,4 +74,22 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        self.trace()
+        HLT  = 0b00000001  
+        LDI  = 0b10000010  
+        PRN  = 0b01000111 
+        running = True
+        while running:
+            IR = self.ram[self.pc]
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+            if IR == HLT:
+                running = False
+            elif IR == LDI:
+                self.reg[operand_a] = operand_b
+                self.pc += 3
+            elif IR == PRN:
+                print(self.reg[operand_a])
+                self.pc += 2
+            else:
+                print("Halt program")
+                running = False

@@ -100,7 +100,6 @@ class CPU:
         CMP = 0b10100111
         JMP = 0b01010100
         JNE = 0b01010110
-        JLE = 0b01011001
         JEQ = 0b01010101
         running = True
         while running:
@@ -144,12 +143,16 @@ class CPU:
             elif IR == JMP: 
                 self.pc = self.reg[operand_a]  
             elif IR == JEQ: # if E flag is true, jump to address in given register
-                if self.FL[7] is '00000001': 
+                if self.FL is '00000001': 
                     self.pc = self.reg[operand_a]
                 else: 
                     self.pc += 2 
             elif IR == JNE: # if E flag is clear, jump to address in given register 
                 if self.FL == '00000000':
+                    self.pc = self.reg[operand_a]
+                elif self.FL == '00000100': 
+                    self.pc = self.reg[operand_a] 
+                elif self.FL == '00000010': 
                     self.pc = self.reg[operand_a]
                 else: 
                     self.pc += 2 

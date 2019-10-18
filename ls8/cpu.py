@@ -58,11 +58,11 @@ class CPU:
         #elif op == "SUB": etc 
         elif op == "CMP": # 00000lGE -- FLAG ORDER 
             if self.reg[reg_a] < self.reg[reg_b]: # LESS THAN FLAG
-                self.FL = 00000100
+                self.FL = '00000100'
             elif self.reg[reg_a] == self.reg[reg_b]: ## EQUAL FLAG
-                self.FL = 00000001
+                self.FL = '00000001'
             elif self.reg[reg_a] > self.reg[reg_b]: ## GREATER THAN FLAG 
-                self.FL = 00000010
+                self.FL = '00000010'
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -97,6 +97,11 @@ class CPU:
         RET = 0b00010001
         CALL = 0b01010000
         ADD = 0b10100000
+        CMP = 0b10100111
+        JMP = 0b01010100
+        JNE = 0b01010110
+        JLE = 0b01011001
+        JEQ = 0b01010101
         running = True
         while running:
             IR = self.ram[self.pc]
@@ -132,7 +137,22 @@ class CPU:
             elif IR == POP: 
                 self.reg[operand_a] = self.ram[self.SP]
                 self.SP += 1 
-                self.pc += 2        
+                self.pc += 2   
+            elif IR == CMP: 
+                self.alu("CMP", operand_a, operand_b)
+                self.pc += 3 
+            elif IR == JMP: 
+                self.pc = self.reg[operand_a]  
+            elif IR == JEQ: # if E flag is true, jump to address in given register
+                if self.FL[7] is '00000001': 
+                    self.pc = self.reg[operand_a]
+                else: 
+                    self.pc += 2 
+            elif IR == JNE: # if E flag is clear, jump to address in given register 
+                if self.FL == '00000000':
+                    self.pc = self.reg[operand_a]
+                else: 
+                    self.pc += 2 
             else:
                 print("Halt program")
                 running = False
